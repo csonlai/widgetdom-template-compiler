@@ -1,5 +1,4 @@
 # widgetdom-template-compiler
-
 小程序widget模版预编译器，把wxml模版预编译成可执行的widgetDom模版函数。
 
 
