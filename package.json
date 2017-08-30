@@ -1,0 +1,29 @@
+{
+  "name": "widgetdom-template-compiler",
+  "version": "0.1.17",
+  "description": "compiler for widgetdom template",
+  "main": "./dist/widgetdom-template-compile.min.js",
+  "author": "csonlai",
+  "dependencies": {
+    "recursive-readdir": "^2.2.1",
+    "watch-fs": "0.0.7"
+  },
+  "devDependencies": {
+    "babel-core": "^6.25.0",
+    "babel-loader": "^7.1.1",
+    "babel-preset-env": "^1.6.0",
+    "mocha": "^3.4.2",
+    "webpack": "^3.4.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/csonlai/widgetdom-template-compiler.git"
+  },
+  "bin": {
+    "wdcompile": "./bin/wdcompile.js"
+  },
+  "license": "ISC",
+  "scripts": {
+    "build": "webpack"
+  }
+}
