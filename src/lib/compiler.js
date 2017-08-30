@@ -6,7 +6,7 @@ const expressionReg = /\{\{(.*?)\}\}/g;
 // 匹配字符串
 const strReg = /"([^"]*)"|'([^']*)'/g;
 
-const plainStrObj = {};
+let plainStrObj = {};
 
 // 转换属性数据为keyValue对象
 const Attrs2KeyValue = (attrArr) => {
@@ -41,7 +41,7 @@ export default {
   // 是否不做替换的变量
   isFilterVar (name, filterList) {
     for (let i = 0; i < filterList.length; i++) {
-      if (name.indexOf(filterList[i]) === 0) {
+      if (new RegExp('^' + filterList[i] + '(\\.(.*))*$').test(name)) {
         return true;
       }
     }
@@ -97,12 +97,12 @@ export default {
         if (index > lastIndex) {
           tokens.push(JSON.stringify(expression.slice(lastIndex, index)));
         }
-        tokens.push(this.parseExpression(result[1].trim(), filterList));
+        tokens.push('(' + this.parseExpression(result[1].trim(), filterList) + ')');
         lastIndex = index + result[0].length;
       }
 
       if (lastIndex < expression.length) {
-        tokens.push(JSON.stringify(expression.slice(lastIndex)));
+        tokens.push('(' + JSON.stringify(expression.slice(lastIndex)) + ')');
       }
 
       return tokens.join('+');
@@ -137,7 +137,7 @@ export default {
         const forIndexVal = this.getAndRemoveAttr(node, 'wx:for-index', filterList) || 'index';
         return '...(' + forVal + ' || []).map((' + forItemVal + ',' + forIndexVal + ') => {'
           + 'return ' + this.compileNode(node, [forItemVal, forIndexVal])
-        + '})'        
+        + '})'
       }
 
     }
@@ -146,17 +146,17 @@ export default {
       const ifVal = this.getAndRemoveAttr(node, 'wx:if', filterList);
       const nextHasElif = this.hasAttr(node.nextSibling, 'wx:elif', filterList);
       if (nextHasElif) {
-        return '(' + ifVal + ') ? ' + this.compileNode(node, filterList) + ':' + this.compileNode(node.nextSibling, filterList);
+        return '((' + ifVal + ') ? ' + this.compileNode(node, filterList) + ':' + this.compileNode(node.nextSibling, filterList) + ')';
       }
       else {
-        return '(' + ifVal + ') ? ' + this.compileNode(node, filterList) + ': null';
+        return '((' + ifVal + ') ? ' + this.compileNode(node, filterList) + ': null)';
       }
     }
     // 处理elif
     else if (hasElifVal) {
       const elifVal = this.getAndRemoveAttr(node, 'wx:elif', filterList);
       this.removeChild(node);
-      return '(' + elifVal + ') ? ' + this.compileNode(node, filterList) + ':' + this.compileNode(node.nextSibling, filterList);
+      return '((' + elifVal + ') ? ' + this.compileNode(node, filterList) + ':' + this.compileNode(node.nextSibling, filterList) + ')';
     }
     // 处理else
     else if (hasElseVal) {
@@ -200,7 +200,9 @@ export default {
     return this.getPlainTextCode() + ' return ' + sectionCode;   // 遍历生成代码
   },
   getPlainTextCode () {
-    return 'Object.assign(data,' + JSON.stringify(plainStrObj) + ');';
+    const codeStr = JSON.stringify(plainStrObj);
+    plainStrObj = {};
+    return 'Object.assign(data,' + codeStr + ');';
   },
   compileTpl (tpl) {
     let parser = new SimpleHtmlParser();

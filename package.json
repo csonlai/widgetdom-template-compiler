@@ -1,6 +1,6 @@
 {
   "name": "widgetdom-template-compiler",
-  "version": "0.1.20",
+  "version": "0.1.26",
   "description": "compiler for widgetdom template",
   "main": "./dist/widgetdom-template-compile.min.js",
   "author": "csonlai",
