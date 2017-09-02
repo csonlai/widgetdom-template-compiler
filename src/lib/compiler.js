@@ -27,7 +27,7 @@ export default {
       attrVal = null;
     } 
     else if (attrName === 'wx:for-item' || attrName === 'wx:for-index') {
-      return node.attr[attrName];
+      attrVal = node.attr[attrName];
     }
     else {
       attrVal = this.transformExpression(node, attrName, filterList);
@@ -145,7 +145,8 @@ export default {
     else if (hasIfVal) {
       const ifVal = this.getAndRemoveAttr(node, 'wx:if', filterList);
       const nextHasElif = this.hasAttr(node.nextSibling, 'wx:elif', filterList);
-      if (nextHasElif) {
+      const nextHasElse = this.hasAttr(node.nextSibling, 'wx:else', filterList);
+      if (nextHasElif || nextHasElse) {
         return '((' + ifVal + ') ? ' + this.compileNode(node, filterList) + ':' + this.compileNode(node.nextSibling, filterList) + ')';
       }
       else {
@@ -155,12 +156,21 @@ export default {
     // 处理elif
     else if (hasElifVal) {
       const elifVal = this.getAndRemoveAttr(node, 'wx:elif', filterList);
+      const nextHasElif = this.hasAttr(node.nextSibling, 'wx:elif', filterList);
+      const nextHasElse = this.hasAttr(node.nextSibling, 'wx:else', filterList);
       this.removeChild(node);
-      return '((' + elifVal + ') ? ' + this.compileNode(node, filterList) + ':' + this.compileNode(node.nextSibling, filterList) + ')';
+      if (nextHasElif || nextHasElse) {
+        return '((' + elifVal + ') ? ' + this.compileNode(node, filterList) + ':' + this.compileNode(node.nextSibling, filterList) + ')';
+      }
+      else {
+        return '((' + elifVal + ') ? ' + this.compileNode(node, filterList) + ': null)';
+      }
+
     }
     // 处理else
     else if (hasElseVal) {
       const elseVal = this.getAndRemoveAttr(node, 'wx:else', filterList);
+      this.removeChild(node);
       return this.compileNode(node, filterList);
     }
     // 处理普通元素
@@ -171,7 +181,7 @@ export default {
   getAttrObject (node, filterList) {
     const arr = [];
     for (let name in node.attr) {
-      if (node.attr[name]) {
+      if (node.attr[name] != null) {
         arr.push('"' + name + '":' + this.transformExpression(node, name, filterList));
       }
     }
@@ -181,7 +191,7 @@ export default {
     if (!node) {
       return false;
     }
-    return node.attr[name] != null;
+    return name in node.attr;
   },
   compileChildren (node, filterList) {
     let child;
