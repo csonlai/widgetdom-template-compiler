@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require("../dist/widgetdom-template-compile.min.js");
+require("../dist/command.min.js");

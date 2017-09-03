@@ -5,10 +5,13 @@ const eventName = process.env.npm_lifecycle_event;
 
 const configMap = {
   'build': {
-    entry: './src/index.js',
+    entry: {
+      index: './src/index.js',
+      command: './src/command.js'
+    },
     output: {
       path: path.resolve(__dirname, 'dist'),
-      filename: 'widgetdom-template-compile.min.js'
+      filename: '[name].min.js'
     }
   }
 }
