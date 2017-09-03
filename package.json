@@ -1,8 +1,8 @@
 {
   "name": "widgetdom-template-compiler",
-  "version": "0.1.31",
+  "version": "0.1.33",
   "description": "compiler for widgetdom template",
-  "main": "./dist/index.min.js",
+  "main": "./src/index.js",
   "author": "csonlai",
   "dependencies": {
     "recursive-readdir": "^2.2.1",

@@ -6,7 +6,6 @@ const eventName = process.env.npm_lifecycle_event;
 const configMap = {
   'build': {
     entry: {
-      index: './src/index.js',
       command: './src/command.js'
     },
     output: {
