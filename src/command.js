@@ -16,8 +16,13 @@ const createCompileFile = (file) => {
     // 用户模版
     const tplStr = fs.readFileSync(file, 'utf-8');
     const codeStr = compiler.compileTpl(tplStr);
+    const destFileName = getCompileFileName(file);
 
-    fs.writeFile(getCompileFileName(file), codeTplStr.replace(/\{\{code\}\}/, codeStr));
+    fs.writeFile(destFileName, codeTplStr.replace(/\{\{code\}\}/, codeStr), (err) => {
+        if (err) {
+            console.error(`open template ${destFileName} failed!`);
+        }
+    });
 }
 const isTplFile = (file) => {
     return path.extname(file) === tplExtName;
