@@ -1,6 +1,6 @@
 {
   "name": "widgetdom-template-compiler",
-  "version": "0.1.35",
+  "version": "0.1.38",
   "description": "compiler for widgetdom template",
   "main": "./src/index.js",
   "author": "csonlai",
