@@ -1,4 +1,4 @@
-import SimpleHtmlParser from './simpleParser';
+var htmlparser = require("htmlparser2");
 
 // 匹配变量
 const varReg = /([a-zA-Z_\$]+[\w\$\[\]]*)(\.([a-zA-Z_\$]+[\w\$\[\]]*))*/g;
@@ -7,15 +7,6 @@ const expressionReg = /\{\{(.*?)\}\}/g;
 const strReg = /"([^"]*)"|'([^']*)'/g;
 
 let plainStrObj = {};
-
-// 转换属性数据为keyValue对象
-const Attrs2KeyValue = (attrArr) => {
-  let attrObj = {};
-  for (let i = 0; i < attrArr.length; i++) {
-    attrObj[attrArr[i].name] = attrArr[i].value
-  }
-  return attrObj;
-}
 
 export default {
   walk (node) {
@@ -215,58 +206,59 @@ export default {
     return 'Object.assign(data,' + codeStr + ');';
   },
   compileTpl (tpl) {
-    let parser = new SimpleHtmlParser();
     let nodeStack = [];
     let root = {
       tagName: 'view',
       attr: {},
       children: []
     };
-    parser.parse(tpl, {
-      startElement(tagName, attr) {
-        let lastStackNode = nodeStack[nodeStack.length - 1];
-        let parentNode;
-        let node;
-        let expression;
-        let result;
-        let children;
+    var parser = new htmlparser.Parser({
+        onopentag: function(tagName, attr){
+            let lastStackNode = nodeStack[nodeStack.length - 1];
+            let parentNode;
+            let node;
+            let expression;
+            let result;
+            let children;
 
-        if (lastStackNode) {
-          parentNode = lastStackNode;
-        } else {
-          parentNode = root;
-        }
+            if (lastStackNode) {
+              parentNode = lastStackNode;
+            } else {
+              parentNode = root;
+            }
 
-        children = parentNode.children;
+            children = parentNode.children;
 
-        node = {
-          tagName: tagName,
-          style: {},
-          attr: Attrs2KeyValue(attr),
-          children: [],
-          parentNode: parentNode
-        };
-        // 互相设置相邻兄弟节点
-        if (children.length) {
-          node.previousSbling = children[children.length - 1];
-          children[children.length - 1].nextSibling = node;
+            node = {
+                tagName: tagName,
+                style: {},
+                attr,
+                children: [],
+                parentNode: parentNode
+            };
+            // 互相设置相邻兄弟节点
+            if (children.length) {
+                node.previousSbling = children[children.length - 1];
+                children[children.length - 1].nextSibling = node;
+            }
+            children.push(node);
+            nodeStack.push(node);
+        },
+        ontext: function(text){
+            if (!text.trim()) {
+              return;
+            }
+            let lastStackNode = nodeStack[nodeStack.length - 1];
+            if (lastStackNode) {
+              lastStackNode.attr.content = text;
+            }
+        },
+        onclosetag: function(tagname){
+            nodeStack.pop();
         }
-        children.push(node);
-        nodeStack.push(node);
-      },
-      characters(text) {
-        if (!text.trim()) {
-          return;
-        }
-        let lastStackNode = nodeStack[nodeStack.length - 1];
-        if (lastStackNode) {
-          lastStackNode.attr.content = text;
-        }
-      },
-      endElement(tagName) {
-        nodeStack.pop();
-      }
-    });
+    }, {recognizeSelfClosing: true});
+    parser.write(tpl);
+    parser.end();
     return this.generateCode(root);
   }
 }

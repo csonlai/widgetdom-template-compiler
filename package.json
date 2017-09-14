@@ -1,10 +1,11 @@
 {
   "name": "widgetdom-template-compiler",
-  "version": "0.1.38",
+  "version": "0.1.39",
   "description": "compiler for widgetdom template",
   "main": "./src/index.js",
   "author": "csonlai",
   "dependencies": {
+    "htmlparser2": "^3.9.2",
     "recursive-readdir": "^2.2.1",
     "watch-fs": "0.0.7"
   },
