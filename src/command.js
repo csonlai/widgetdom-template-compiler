@@ -6,8 +6,8 @@ import recursive from 'recursive-readdir';
 import { Watcher } from 'watch-fs';
 
 const tplExtName = '.wxml';
-// 用户模版路径
-const tplPath = process.argv[2];
+// 参数
+const arg = process.argv[2];
 // 文件列表
 const fileList = fs.readdirSync('./');
 
@@ -32,7 +32,17 @@ const getCompileFileName = (file) => {
     const destFile = path.basename(file, tplExtName) + '.compile.js';
     return path.dirname(file) + '/' + destFile;
 }
-
+// 递归编译
+const compileFiles = () => {
+    recursive('./', ['node_modules/*'], (err, files) => {
+        // 批量生成模版对应的compile.js
+        files.forEach(file => {
+            if (isTplFile(file)) {
+                createCompileFile(file)
+            }
+        });
+    });
+}
 
 // 文件监听
 const watcher = new Watcher({
@@ -62,18 +72,15 @@ watcher.on('delete', function(file) {
     }
 });
 
-watcher.start(function(err, failed) {
-    console.log('Start Watching...');
-    recursive('./', ['node_modules/*'], (err, files) => {
-        // 批量生成模版对应的compile.js
-        files.forEach(file => {
-            if (isTplFile(file)) {
-                createCompileFile(file)
-            }
-        });        
+if (arg === 'build') {
+    compileFiles();
+} else {
+    watcher.start(function(err, failed) {
+        console.log('Start Watching...');
+        compileFiles();
     });
+}
 
-});
 
 
 

@@ -4,7 +4,7 @@ export default
 }
 
 export default (data, opt) => {
-	const {View, Text, Image, Picker} = opt;
+	const {View, Text, Image, Navigator} = opt;
 	{{code}};
 }`
 
