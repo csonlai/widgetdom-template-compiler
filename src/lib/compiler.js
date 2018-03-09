@@ -33,8 +33,11 @@ export default {
   },
   // 是否不做替换的变量
   isFilterVar (name, filterList) {
+    if (retainReg.test(name)) {
+      return true;
+    }
     for (let i = 0; i < filterList.length; i++) {
-      if (new RegExp('^' + filterList[i] + '(\\.(.*))*$').test(name) || retainReg.test(name)) {
+      if (new RegExp('^' + filterList[i] + '(\\.(.*))*$').test(name)) {
         return true;
       }
     }
@@ -65,6 +68,7 @@ export default {
     });
 
     return expression.replace(varReg, (val) => {
+      console.log(val)
       // 不需替代属性
       if (this.isFilterVar(val, filterList)) {
         return val;
