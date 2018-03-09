@@ -68,7 +68,6 @@ export default {
     });
 
     return expression.replace(varReg, (val) => {
-      console.log(val)
       // 不需替代属性
       if (this.isFilterVar(val, filterList)) {
         return val;
