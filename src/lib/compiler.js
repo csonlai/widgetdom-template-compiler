@@ -6,6 +6,8 @@ const expressionReg = /\{\{(.*?)\}\}/g;
 // 匹配字符串
 const strReg = /"([^"]*)"|'([^']*)'/g;
 
+const retainReg = /^(true|false|\d+)$/;
+
 let plainStrObj = {};
 
 export default {
@@ -32,7 +34,7 @@ export default {
   // 是否不做替换的变量
   isFilterVar (name, filterList) {
     for (let i = 0; i < filterList.length; i++) {
-      if (new RegExp('^' + filterList[i] + '(\\.(.*))*$').test(name)) {
+      if (new RegExp('^' + filterList[i] + '(\\.(.*))*$').test(name) || retainReg.test(name)) {
         return true;
       }
     }
