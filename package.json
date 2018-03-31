@@ -1,6 +1,6 @@
 {
   "name": "widgetdom-template-compiler",
-  "version": "0.2.10",
+  "version": "0.2.13",
   "description": "compiler for widgetdom template",
   "main": "./src/index.js",
   "author": "csonlai",
@@ -25,6 +25,6 @@
   },
   "license": "ISC",
   "scripts": {
-    "build": "webpack"
+    "build": "webpack -p"
   }
 }
